@@ -1,0 +1,53 @@
+<html>
+<head>
+<title>Ajax test</title>
+<script>
+function doAjaxCall() {
+
+  var xhttp = new XMLHttpRequest();
+  
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4) {
+      	if ( this.status == 200) {
+	    	var obj = JSON.parse(this.responseText);
+	     	for (var k in obj) {
+		    	var subobj = obj[k];
+		     	addRow(subobj.chromosome, subobj.entryCount, subobj.geneCount);
+		     }
+	    } else {
+	    	alert('Oups !');
+	    }
+	}
+
+  };
+
+  xhttp.open("GET", "https://api.nextprot.org/chromosome-reports/summary.json", true);
+  xhttp.send();
+}
+
+function addRow(c,e,g) {
+	var tbl = document.getElementById("mytable");
+	var row = document.createElement("tr");
+	tbl.appendChild(row);
+	addCell(row,c);
+	addCell(row,e);
+	addCell(row,g);
+}
+
+function addCell(row,content) {
+	var td = document.createElement("td");
+	td.innerHTML = content;
+	row.appendChild(td);
+}
+
+</script>
+</head>
+<body>
+<button type="button" onclick="doAjaxCall()">Do ajax call</button>
+<table id="mytable">
+	<tr>
+		<td>chromosome</td><td>entries</td><td>genecount</td>
+	<tr>
+</table>
+</body>
+</html>

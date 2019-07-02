@@ -1,0 +1,48 @@
+<html>
+
+        <head>
+            <title>neXtProt enzymes</title>
+            <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+            <link rel="stylesheet" type="text/css" href=".\bower_components\bootstrap\dist\css\bootstrap.min.css">
+            <script src="./bower_components/jquery/dist/jquery.min.js"></script>
+            <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+            <script src="./bower_components/handlebars/handlebars.js"></script>
+            <script src="./bower_components/nextprot/dist/nextprot.min.js"></script>
+        </head>
+
+<body>
+    <div id="demo" class="row"></div>
+        <div>
+            <h2> Enzymes list </h2>    
+        </div>
+    </div>
+    <table id="table" class="display" width="100%"></table>
+</body>
+
+<script>
+    var nx = new Nextprot.Client("demo", "calipho");
+
+    nx.getJSON("/digestion/available-protease-list").then(function(data){
+        //console.log("DATA", data)
+        enzymes=[];
+        for (var enz in data){
+            enzymes.push(
+                [data[enz]
+                ]);
+        }
+        //console.log(enzymes);
+
+
+$(document).ready(function() {
+    $('#table').DataTable( {
+        data: enzymes,
+        columns: [
+            { title: "Enzymes" }
+        ],
+    } );
+} );
+}); 
+
+</script>
+
+</html>

@@ -1,0 +1,105 @@
+<html>
+
+        <head>
+            <title>neXtProt digestion</title>
+            <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+            <link rel="stylesheet" type="text/css" href=".\bower_components\bootstrap\dist\css\bootstrap.min.css">
+            <script src="./bower_components/jquery/dist/jquery.min.js"></script>
+            <script src="https://cdn.rawgit.com/calipho-sib/nextprot-js/v0.0.54/dist/nextprot.bundle.js"></script>
+            <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+            <script src="./bower_components/handlebars/handlebars.js"></script>
+            <script src="./bower_components/nextprot/dist/nextprot.min.js"></script>
+        </head>
+
+<body>
+    <div id="demo" class="row"></div>
+        <div>
+            <h2>Digested peptides  </h2> 
+            Enter Isoform AC <input id="Isoform" type="text" value=""><br>
+                <label for="MaxMC"> Max missed cleavages </label>
+                <select id="MaxMC">
+                    <option selected="selected" value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+                Peptide size min<input id="minSize" type="number" name="min" value="7">
+                max <input id="maxSize" type="number" name="max" value="">
+                <input type="submit" name="Digest" value="DIGEST" onclick="getPeptides()" />
+        </div>
+    </div>
+    <table id="table" class="display" width="100%"  >
+        <thead>
+            <tr>
+                <td> Peptides</td>
+                <td> Proteases </td>
+                <td>Peptide count</td>
+                <td> Unique peptide count</td>
+        </thead>
+        <tbody>
+            <td ></td>
+        </tbody>
+    </table>
+</body>
+<script>
+    
+    var nx = new Nextprot.Client("demo", "calipho");
+
+        nx.getJSON("/digestion/available-protease-list.json","true").then(function(list){
+            proteases=[];
+            for (var enz in list){
+                proteases.push(
+                    [list[enz]]
+                )
+            };
+            // console.log(proteases)
+        })
+
+    function getPeptides(entryName) {
+        var entryName = $('#Isoform').val();
+        var maxmissedcleavages = $('#MaxMC').val();
+        var minPeptideSize = $('#minSize').val();
+        var maxPeptideSize = $('#maxSize').val();
+
+    for(prot in proteases){
+        var url = "/digestion/"+ entryName +".json?protease="+proteases[prot]+"&minpeplen="+ minPeptideSize +"&maxpeplen="+ maxPeptideSize +"&maxmissedcleavages="+ maxmissedcleavages +"&digestmaturepartsonly=true";
+        var enzymes = proteases[prot];
+        var peplength=[]
+
+        nx.getJSON(url,"true").then(function(data){
+            
+            console.log("DATA", data);
+            peptides=[];
+
+                for (var peptide in data){
+                    peptides.push(
+                        [data[peptide]
+                        ]);
+                }
+            var length= peptides.length;
+            console.log("Peptide count",length);
+
+                
+        for (var prot in proteases){
+        $(document).ready(function() {
+        $('#table.display').DataTable( {
+            data: peptides,
+            columns: [
+                { title: "Peptides" }],
+            destroy:true,
+            paging: false, 
+            searching:false,
+        } );
+    } );
+        }
+})
+    };
+    // Promise.all([nx.getJSON(url,"true")],[nx.getJSON(url2,"true")]).then(function(data){
+    //     console.log(data[0]);
+    //     console.log(data[1]);
+
+    // })
+};
+</script>
+
+</html>

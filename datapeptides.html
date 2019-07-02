@@ -1,0 +1,73 @@
+<html>
+
+        <head>
+            <title>neXtProt peptides</title>
+            <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+            <link rel="stylesheet" type="text/css" href=".\bower_components\bootstrap\dist\css\bootstrap.min.css">
+            <script src="./bower_components/jquery/dist/jquery.min.js"></script>
+            <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+            <script src="./bower_components/handlebars/handlebars.js"></script>
+            <script src="./bower_components/nextprot/dist/nextprot.min.js"></script>
+        </head>
+
+<body>
+    <div id="demo" class="row"></div>
+        <div>
+            <h2>Peptides list for one entry   </h2>         
+        </div>
+    </div>
+    <!-- <label for="Entry">Entry</label> :
+    <input type="text" name="entry" id="entry" required>
+    <span id="entry"></span>
+    <button type="button" onclick="data()">Digest</button> -->
+    <table id="table" class="display" width="100%"></table>
+</body>
+
+<script>
+    var nx = new Nextprot.Client("demo", "calipho");
+
+    nx.getAnnotationsByCategory("NX_P46976","peptide-mapping").then(function(data){
+            var peptides = []; 
+            var subseq = '';
+            //console.log("DATA", data);
+            for (var entry in data.isoforms){
+                var sequence = data.isoforms[entry].sequence;
+            }
+            //console.log("SEQUENCE", sequence); 
+
+            for (var a in data.annot) {
+                var peptideMappings = data.annot[a].targetingIsoformsMap;
+                //console.log(peptideMappings);
+
+                for (var isoAccession in peptideMappings) {
+                    var peptide = peptideMappings[isoAccession];
+                    //console.log("PEPTIDE", peptide);
+                        var subseq = sequence.substring(peptide.firstPosition-1, peptide.lastPosition);
+                    //console.log("SUBSEQUENCE", subseq);
+
+                    peptides.push(
+                    [
+                        peptide.isoformAccession,
+                        peptide.firstPosition,
+                        peptide.lastPosition,
+                        subseq,
+                    ]);
+                }
+            }
+            console.log(peptides);
+
+    $(document).ready(function() {
+    $('#table').DataTable( {
+        data: peptides,
+        columns: [
+            { title: "isoAccession" },
+            { title: "firstPos" },
+            { title: "lastPos" },
+            { title: "Sequence"},
+        ],
+    } );
+} );
+});
+</script>
+
+</html>

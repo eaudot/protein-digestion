@@ -1,0 +1,9 @@
+{
+  "name": "nextprot",
+  "version": "0.0.159",
+  "main": "dist/nextprot.min.js",
+  "description": "neXtProt api javascript client",
+  "dependencies": {
+    "bower": "^1.5.2"
+  }
+}

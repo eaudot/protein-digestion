@@ -1,0 +1,65 @@
+
+<html>
+    <head>
+        <title>neXtProt digestion</title>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+        <link rel="stylesheet" type="text/css" href=".\bower_components\bootstrap\dist\css\bootstrap.min.css">
+        <script src="./bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+        <script src="./bower_components/handlebars/handlebars.js"></script>
+        <script src="./bower_components/nextprot/dist/nextprot.min.js"></script>
+    </head>
+    
+    <body>
+        <div id="demo" class="row"></div>
+            <div>
+                <h2> Digestion tool </h2>         
+            </div>
+        <button type="button" onclick="digestion()">Digest</button>
+        <table id="mytable">
+            <tr>
+                <td>Peptides</td>
+            <tr>
+        </table>
+    </body>
+            
+<script>
+function digestion() {
+    var results=[];
+    var xhttp = new XMLHttpRequest();
+    
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4) {
+                if ( this.status == 200) {
+                var sequence = JSON.parse(this.responseText);
+                console.log(sequence);
+            } else {
+                alert('Oups !');
+            }
+            for ( var s in sequence){
+                var results = sequence[s];
+                console.log(results);
+                addRow(results);
+            };
+        };
+    };
+   
+    xhttp.open("GET", "https://api.nextprot.org/digestion/NX_P01308.json?protease=TRYPSIN&minpeplen=7&maxmissedcleavages=0&digestmaturepartsonly=true", true);
+    xhttp.send();
+}
+function addRow(p) {
+	var tbl = document.getElementById("mytable");
+	var row = document.createElement("tr");
+	tbl.appendChild(row);
+	addCell(row,p);
+}
+
+function addCell(row,content) {
+	var td = document.createElement("td");
+	td.innerHTML = content;
+	row.appendChild(td);
+}
+
+
+</script>
+</html>
